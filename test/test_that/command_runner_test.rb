@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class CommandRunnerTest < Minitest::Test
+class TestThat::CommandRunnerTest < Minitest::Test
   def test_dry_run_prints_command
     runner = TestThat::CommandRunner::DryRun.new
     output = capture_io { runner.run("rails test") }.first

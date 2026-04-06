@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class RelatedFilesTest < Minitest::Test
+class TestThat::RelatedFilesTest < Minitest::Test
   def test_returns_related_files_for_selected_files
     related = TestThat::RelatedFiles.new(["app/models/user.rb", "app/models/post.rb"])
     called_with = nil

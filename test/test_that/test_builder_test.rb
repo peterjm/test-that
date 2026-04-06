@@ -4,7 +4,7 @@ require "test_helper"
 require "tempfile"
 require "json"
 
-class TestBuilderTest < Minitest::Test
+class TestThat::TestBuilderTest < Minitest::Test
   def test_returns_error_when_no_harness_detected
     Dir.chdir(Dir.mktmpdir) do
       tester = TestThat::TestBuilder.build(base_options)

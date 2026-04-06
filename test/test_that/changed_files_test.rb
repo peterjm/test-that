@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class ChangedFilesTest < Minitest::Test
+class TestThat::ChangedFilesTest < Minitest::Test
   def test_returns_files_from_git_changed_files
     changed = TestThat::ChangedFiles.new(false)
     changed.define_singleton_method(:`) { |_| "test/foo_test.rb\ntest/bar_test.rb\n" }

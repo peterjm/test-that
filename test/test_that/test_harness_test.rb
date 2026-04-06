@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestHarnessRubyTest < Minitest::Test
+class TestThat::TestHarnessRubyTest < Minitest::Test
   def setup
     @harness = TestThat::TestHarness::Ruby.new
   end

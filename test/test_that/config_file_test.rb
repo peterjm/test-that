@@ -4,7 +4,7 @@ require "test_helper"
 require "tempfile"
 require "json"
 
-class ConfigFileTest < Minitest::Test
+class TestThat::ConfigFileTest < Minitest::Test
   def test_returns_empty_hash_when_filename_is_nil
     config = TestThat::ConfigFile.new(nil)
     assert_equal({}, config.options)
