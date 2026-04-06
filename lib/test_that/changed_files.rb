@@ -10,10 +10,10 @@ module TestThat
 
     def files
       content = if include_branch_commits
-        `git-changed-files --include-branch-commits | related-files --stdin`
-      else
-        `git-changed-files | related-files --stdin`
-      end
+                  `git-changed-files --include-branch-commits | related-files --stdin`
+                else
+                  `git-changed-files | related-files --stdin`
+                end
       content.split.map(&:strip)
     end
   end

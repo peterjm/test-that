@@ -3,7 +3,7 @@
 module TestThat
   module Tester
     class Failed < Basic
-      def test
+      def call
         run(test_harness.test_failed_command)
       end
     end

@@ -22,7 +22,7 @@ module TestThat
 
     def symbolize_keys(hash)
       hash
-        .transform_keys { |k| k.to_sym }
+        .transform_keys(&:to_sym)
         .transform_values { |v| v.is_a?(Hash) ? symbolize_keys(v) : v }
     end
   end

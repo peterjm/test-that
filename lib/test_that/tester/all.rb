@@ -3,7 +3,7 @@
 module TestThat
   module Tester
     class All < Basic
-      def test
+      def call
         run(test_harness.test_all_command)
       end
     end

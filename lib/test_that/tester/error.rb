@@ -3,7 +3,7 @@
 module TestThat
   module Tester
     class Error
-      def test
+      def call
         warn "Could not run tests; no compatible test environment detected"
         false
       end

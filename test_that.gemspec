@@ -9,10 +9,11 @@ Gem::Specification.new do |spec|
   spec.email = ["peter@petermccracken.com"]
 
   spec.summary = "Run the right tests for the files you changed."
-  spec.description = "Automatically detects your test framework and runs relevant tests based on changed or specified files."
+  spec.description =
+    "Automatically detects your test framework and runs relevant tests based on changed or specified files."
   spec.homepage = "https://github.com/peterjm/test-that"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["source_code_uri"] = "https://github.com/peterjm/test-that"
   spec.metadata["rubygems_mfa_required"] = "true"
@@ -23,6 +24,5 @@ Gem::Specification.new do |spec|
     end
   end
   spec.executables = ["test-that"]
-  spec.test_files = spec.files.grep(%r{\Atest/})
   spec.require_paths = ["lib"]
 end

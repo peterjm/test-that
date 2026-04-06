@@ -3,7 +3,7 @@
 module TestThat
   module Tester
     class VerboseSelected < Selected
-      def test
+      def call
         print_tests
         super
       end

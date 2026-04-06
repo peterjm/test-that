@@ -15,7 +15,7 @@ module TestThat
       @options = ConfigFile.new(options[:config_file]).options.merge(options)
     end
 
-    def build
+    def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       if no_test_harness?
         Tester::Error.new
       elsif test_all?

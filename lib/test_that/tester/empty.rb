@@ -3,7 +3,7 @@
 module TestThat
   module Tester
     class Empty
-      def test
+      def call
         puts "No tests to run"
         true
       end

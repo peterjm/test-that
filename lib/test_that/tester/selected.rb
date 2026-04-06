@@ -10,7 +10,7 @@ module TestThat
         @tests_to_run = tests_to_run
       end
 
-      def test
+      def call
         run(test_harness.test_files_command(tests_to_run))
       end
     end

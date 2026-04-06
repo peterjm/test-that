@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "support/fake_harness"
+require "support/recording_runner"
 
-class TestThat::Tester::SelectedTest < Minitest::Test
-  def test_runs_test_files_command
-    harness = FakeHarness.new
-    runner = RecordingRunner.new
-    files = ["test/foo_test.rb"]
-    TestThat::Tester::Selected.new(harness, runner, files).test
+module TestThat
+  module Tester
+    class SelectedTest < Minitest::Test
+      def test_runs_test_files_command
+        harness = FakeHarness.new
+        runner = RecordingRunner.new
+        files = ["test/foo_test.rb"]
+        TestThat::Tester::Selected.new(harness, runner, files).call
 
-    assert_equal "test test/foo_test.rb", runner.last_command
+        assert_equal "test test/foo_test.rb", runner.last_command
+      end
+    end
   end
 end
