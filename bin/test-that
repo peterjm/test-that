@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/test_that"
+require "optparse"
+
+options = { config_file: ".test_that.json" }
+OptionParser.new do |opts|
+  opts.banner = "Usage: test-that [options] [files...]"
+  opts.on("-a", "--all", "Run all tests") { options[:all] = true }
+  opts.on("-d", "--dry-run", "Print out test command instead of executing it") { options[:dry_run] = true }
+  opts.on("-f", "--failed", "Run previously failed tests") { options[:failed] = true }
+  opts.on("-b", "--include-branch-commits", "Include branch commits when finding changed files") { options[:include_branch_commits] = true }
+  opts.on("-c", "--config-file FILE", "Read config from file") { |f| options[:config_file] = f }
+end.parse!
+
+TestThat::TestBuilder.build(options.merge(tests: ARGV)).test
