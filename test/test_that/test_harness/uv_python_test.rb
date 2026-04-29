@@ -34,6 +34,12 @@ module TestThat
 
         assert_equal "uv run --directory py pytest test_foo.py bar_test.py", cmd
       end
+
+      def test_test_files_command_includes_verbose_flag_when_verbose
+        cmd = TestThat::TestHarness::UvPython.new(verbose: true).test_files_command(["py/test_foo.py"])
+
+        assert_equal "uv run --directory py pytest test_foo.py -v", cmd
+      end
     end
   end
 end

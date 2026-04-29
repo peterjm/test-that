@@ -36,6 +36,12 @@ module TestThat
         assert_equal "rspec spec/models/user_spec.rb spec/helpers/foo_spec.rb",
                      @harness.test_files_command(["spec/models/user_spec.rb", "spec/helpers/foo_spec.rb"])
       end
+
+      def test_test_files_command_includes_documentation_format_when_verbose
+        cmd = TestThat::TestHarness::Rspec.new(verbose: true).test_files_command(["spec/foo_spec.rb"])
+
+        assert_equal "rspec spec/foo_spec.rb --format documentation", cmd
+      end
     end
   end
 end

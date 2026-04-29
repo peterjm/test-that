@@ -87,11 +87,15 @@ module TestThat
 
     def test_harnesses
       [
-        TestHarness::Rails.new,
-        TestHarness::Ruby.new,
-        TestHarness::Rspec.new,
-        TestHarness::UvPython.new
+        TestHarness::Rails.new(verbose: verbose?),
+        TestHarness::Ruby.new(verbose: verbose?),
+        TestHarness::Rspec.new(verbose: verbose?),
+        TestHarness::UvPython.new(verbose: verbose?)
       ]
+    end
+
+    def verbose?
+      options[:verbose]
     end
   end
 end

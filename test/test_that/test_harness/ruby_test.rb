@@ -52,6 +52,18 @@ module TestThat
 
         assert_equal "false", @result
       end
+
+      def test_test_all_command_includes_verbose_flag_when_verbose
+        cmd = TestThat::TestHarness::Ruby.new(verbose: true).test_all_command
+
+        assert_match(/-- -v\z/, cmd)
+      end
+
+      def test_test_files_command_includes_verbose_flag_when_verbose
+        cmd = TestThat::TestHarness::Ruby.new(verbose: true).test_files_command(["test/foo_test.rb"])
+
+        assert_match(/ -v\z/, cmd)
+      end
     end
   end
 end

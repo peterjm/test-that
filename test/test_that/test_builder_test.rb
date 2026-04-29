@@ -83,6 +83,14 @@ module TestThat
       end
     end
 
+    def test_propagates_verbose_option_to_harness
+      in_ruby_project do
+        tester = TestThat::TestBuilder.build(base_options(all: true, verbose: true))
+
+        assert_includes tester.test_harness.test_all_command.split, "-v"
+      end
+    end
+
     def test_wraps_harness_with_override_when_configured
       in_ruby_project do
         override_config = { commands: { all: "custom test" } }

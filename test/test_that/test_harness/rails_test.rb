@@ -27,6 +27,12 @@ module TestThat
         assert_equal "rails test test/models/user_test.rb test/controllers/posts_test.rb",
                      @harness.test_files_command(["test/models/user_test.rb", "test/controllers/posts_test.rb"])
       end
+
+      def test_test_files_command_includes_verbose_flag_when_verbose
+        cmd = TestThat::TestHarness::Rails.new(verbose: true).test_files_command(["test/foo_test.rb"])
+
+        assert_equal "rails test test/foo_test.rb -v", cmd
+      end
     end
   end
 end

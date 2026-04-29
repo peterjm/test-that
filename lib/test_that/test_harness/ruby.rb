@@ -6,6 +6,10 @@ module TestThat
       REQUIRE_ALL_TESTS = '-e "Dir.glob(\"**/*_test.rb\", base: \"test\"){|f| require f}"'
       REQUIRE_EACH_TEST = '-e "ARGV.each{|f| require f}"'
 
+      def initialize(verbose: false)
+        @verbose = verbose
+      end
+
       def enabled?
         File.directory?("test")
       end
@@ -17,7 +21,9 @@ module TestThat
       end
 
       def test_all_command
-        ["ruby", "-Itest", REQUIRE_ALL_TESTS].join(" ")
+        parts = ["ruby", "-Itest", REQUIRE_ALL_TESTS]
+        parts += ["--", "-v"] if @verbose
+        parts.join(" ")
       end
 
       def test_failed_command
@@ -27,7 +33,9 @@ module TestThat
 
       def test_files_command(files)
         files_relative_to_test_dir = files.map { |f| f.sub(%r{\Atest/}, "") }
-        ["ruby", "-Itest", REQUIRE_EACH_TEST, *files_relative_to_test_dir].join(" ")
+        parts = ["ruby", "-Itest", REQUIRE_EACH_TEST, *files_relative_to_test_dir]
+        parts << "-v" if @verbose
+        parts.join(" ")
       end
     end
   end

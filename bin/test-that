@@ -14,6 +14,7 @@ OptionParser.new do |opts|
     options[:include_branch_commits] = true
   end
   opts.on("-c", "--config-file FILE", "Read config from file") { |f| options[:config_file] = f }
+  opts.on("-v", "--verbose", "Run tests with verbose output") { options[:verbose] = true }
 end.parse!
 
 TestThat::TestBuilder.build(options.merge(tests: ARGV)).call

@@ -3,6 +3,10 @@
 module TestThat
   module TestHarness
     class Rails
+      def initialize(verbose: false)
+        @verbose = verbose
+      end
+
       def enabled?
         File.directory?("test") && File.exist?("config/application.rb")
       end
@@ -12,7 +16,9 @@ module TestThat
       end
 
       def test_all_command
-        "rails test:all"
+        parts = ["rails", "test:all"]
+        parts << "-v" if @verbose
+        parts.join(" ")
       end
 
       def test_failed_command
@@ -21,7 +27,9 @@ module TestThat
       end
 
       def test_files_command(files)
-        ["rails", "test", *files].join(" ")
+        parts = ["rails", "test", *files]
+        parts << "-v" if @verbose
+        parts.join(" ")
       end
     end
   end

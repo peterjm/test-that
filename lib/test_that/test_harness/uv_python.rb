@@ -5,6 +5,10 @@ module TestThat
     class UvPython
       TEST_REGEX = %r{([^/]+_test|test_[^/]+)\.py$}
 
+      def initialize(verbose: false)
+        @verbose = verbose
+      end
+
       def enabled?
         File.exist?("py/pyproject.toml")
       end
@@ -33,6 +37,7 @@ module TestThat
 
       def build_test_command(*args)
         args = args.map { |a| a.sub(%r{\Apy/}, "") }
+        args << "-v" if @verbose
         ["uv", "run", "--directory", "py", "pytest", *args].join(" ")
       end
     end

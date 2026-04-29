@@ -3,6 +3,10 @@
 module TestThat
   module TestHarness
     class Rspec
+      def initialize(verbose: false)
+        @verbose = verbose
+      end
+
       def enabled?
         File.directory?("spec")
       end
@@ -14,15 +18,21 @@ module TestThat
       end
 
       def test_all_command
-        "rspec"
+        with_verbose("rspec")
       end
 
       def test_failed_command
-        "rspec --only-failures"
+        with_verbose("rspec --only-failures")
       end
 
       def test_files_command(files)
-        ["rspec", *files].join(" ")
+        with_verbose(["rspec", *files].join(" "))
+      end
+
+      private
+
+      def with_verbose(command)
+        @verbose ? "#{command} --format documentation" : command
       end
     end
   end
