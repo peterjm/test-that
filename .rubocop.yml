@@ -25,6 +25,7 @@ Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 Metrics/ClassLength:
+  Max: 120
   Exclude:
     - "test/**/*"
 

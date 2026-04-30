@@ -9,6 +9,8 @@ module TestThat
     end
 
     def files
+      return [] if selected_files.empty?
+
       content = `related-files #{selected_files.join(" ")}`
       content.split.map(&:strip)
     end

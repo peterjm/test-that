@@ -53,21 +53,27 @@ module TestThat
     end
 
     def selected_tests
-      @selected_tests ||= test_harness.select_tests(options[:tests])
+      @selected_tests ||= filter_tests(options[:tests] || [])
     end
 
     def related_tests
-      @related_tests ||= begin
-        files = RelatedFiles.new(options[:tests]).files
-        test_harness.select_tests(files)
-      end
+      @related_tests ||= filter_tests(related_files)
     end
 
     def changed_tests
-      @changed_tests ||= begin
-        files = ChangedFiles.new(options[:include_branch_commits]).files
-        test_harness.select_tests(files)
-      end
+      @changed_tests ||= filter_tests(changed_files)
+    end
+
+    def related_files
+      @related_files ||= from_original_pwd { RelatedFiles.new(options[:tests] || []).files }
+    end
+
+    def changed_files
+      @changed_files ||= from_original_pwd { ChangedFiles.new(options[:include_branch_commits]).files }
+    end
+
+    def filter_tests(paths)
+      test_harness.select_tests(relative_to_default_directory(paths))
     end
 
     def test_harness
@@ -100,25 +106,28 @@ module TestThat
     end
 
     def apply_default_directory
+      @original_pwd = Dir.pwd
       dir = options[:default_directory]
       return unless dir && Dir.exist?(dir)
 
-      translate_test_paths(dir)
-      Dir.chdir(dir)
+      @target_abs = File.expand_path(dir)
+      Dir.chdir(@target_abs)
     end
 
-    def translate_test_paths(target_dir)
-      return unless options[:tests]&.any?
+    def relative_to_default_directory(paths)
+      return paths unless @target_abs
 
-      target_abs = File.expand_path(target_dir)
-      options[:tests] = options[:tests].map do |path|
-        abs = File.expand_path(path)
-        if abs.start_with?("#{target_abs}/")
-          abs.delete_prefix("#{target_abs}/")
-        else
-          path
-        end
+      prefix = "#{@target_abs}/"
+      paths.map do |path|
+        abs = File.expand_path(path, @original_pwd)
+        abs.start_with?(prefix) ? abs.delete_prefix(prefix) : path
       end
+    end
+
+    def from_original_pwd(&block)
+      return yield if Dir.pwd == @original_pwd
+
+      Dir.chdir(@original_pwd, &block)
     end
   end
 end

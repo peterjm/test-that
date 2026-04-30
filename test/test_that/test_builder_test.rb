@@ -137,6 +137,21 @@ module TestThat
       end
     end
 
+    def test_default_directory_translates_changed_file_paths
+      in_python_monorepo do
+        File.write("py/test_foo.py", "")
+        config_path = write_config_file({ "default_directory" => "py" })
+
+        builder = TestThat::TestBuilder.new(base_options(config_file: config_path))
+        builder.define_singleton_method(:changed_files) { ["py/test_foo.py"] }
+        builder.define_singleton_method(:related_files) { [] }
+        tester = builder.build
+
+        assert_instance_of TestThat::Tester::VerboseSelected, tester
+        assert_equal ["test_foo.py"], tester.tests_to_run
+      end
+    end
+
     def test_default_directory_falls_back_when_directory_missing
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) do
