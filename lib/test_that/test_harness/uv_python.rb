@@ -3,14 +3,14 @@
 module TestThat
   module TestHarness
     class UvPython
-      TEST_REGEX = %r{([^/]+_test|test_[^/]+)\.py$}
+      TEST_REGEX = %r{(?:\A|/)([^/]+_test|test_[^/]+)\.py\z}
 
       def initialize(verbose: false)
         @verbose = verbose
       end
 
       def enabled?
-        File.exist?("py/pyproject.toml")
+        File.exist?("pyproject.toml")
       end
 
       def select_tests(files)
@@ -36,9 +36,8 @@ module TestThat
       end
 
       def build_test_command(*args)
-        args = args.map { |a| a.sub(%r{\Apy/}, "") }
         args << "-v" if @verbose
-        ["uv", "run", "--directory", "py", "pytest", *args].join(" ")
+        ["uv", "run", "pytest", *args].join(" ")
       end
     end
   end

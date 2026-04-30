@@ -13,6 +13,7 @@ module TestThat
     def initialize(options)
       @options = options
       @options = ConfigFile.new(options[:config_file]).options.merge(options)
+      apply_default_directory
     end
 
     def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
@@ -96,6 +97,28 @@ module TestThat
 
     def verbose?
       options[:verbose]
+    end
+
+    def apply_default_directory
+      dir = options[:default_directory]
+      return unless dir && Dir.exist?(dir)
+
+      translate_test_paths(dir)
+      Dir.chdir(dir)
+    end
+
+    def translate_test_paths(target_dir)
+      return unless options[:tests]&.any?
+
+      target_abs = File.expand_path(target_dir)
+      options[:tests] = options[:tests].map do |path|
+        abs = File.expand_path(path)
+        if abs.start_with?("#{target_abs}/")
+          abs.delete_prefix("#{target_abs}/")
+        else
+          path
+        end
+      end
     end
   end
 end
