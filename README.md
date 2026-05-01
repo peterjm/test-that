@@ -23,3 +23,9 @@ If your repo is polyglot — say a `py/` Python subproject alongside other code 
 ```
 
 Now `tt` invoked from the repo root will route into `py/` and pick up the Python harness there. Test-file arguments are translated automatically: `tt py/test_foo.py` from the repo root becomes `pytest test_foo.py` inside `py/`.
+
+### Running from a subdirectory
+
+Inside a git repository, `tt` walks up from your current directory until it finds a directory where one of its harnesses is enabled (e.g. `pyproject.toml` for Python, `test/` for Ruby/Rails). The walk stops at the git repo root, so `tt` never escapes the repo. If the walk doesn't find a harness — or you're not in a git repo at all — `tt` runs in your current directory, which preserves the previous behavior.
+
+Test-file arguments are translated automatically across the walk-up. From `py/some/sub`, `tt ../../test_foo.py` becomes `pytest test_foo.py` inside `py/`.
