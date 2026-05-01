@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "fileutils"
+require "support/tmpdir_helpers"
 require "tempfile"
 require "json"
 
 module TestThat
   class TestBuilderTest < Minitest::Test
+    include TmpdirHelpers
+
     def test_returns_error_when_no_harness_detected
-      Dir.chdir(Dir.mktmpdir) do
+      in_tmpdir do
         tester = TestThat::TestBuilder.build(base_options)
 
         assert_instance_of TestThat::Tester::Error, tester
@@ -102,64 +104,30 @@ module TestThat
       end
     end
 
-    def test_default_directory_chdirs_into_python_subproject
-      in_python_monorepo do
-        config_path = write_config_file({ "default_directory" => "py" })
-        tester = TestThat::TestBuilder.build(base_options(all: true, config_file: config_path))
+    def test_walks_up_to_find_python_harness
+      in_tmpdir do
+        system("git", "init", "-q") || raise("git init failed")
+        FileUtils.mkdir_p("py/some/sub")
+        File.write("py/pyproject.toml", "")
+        Dir.chdir("py/some/sub")
+
+        tester = TestThat::TestBuilder.build(base_options(all: true))
 
         assert_instance_of TestThat::Tester::All, tester
         assert_equal "uv run pytest", tester.test_harness.test_all_command
       end
     end
 
-    def test_default_directory_translates_test_file_arguments
-      in_python_monorepo do
-        File.write("py/test_foo.py", "")
-        config_path = write_config_file({ "default_directory" => "py" })
-        tester = TestThat::TestBuilder.build(
-          base_options(tests: ["py/test_foo.py"], config_file: config_path)
-        )
-
-        assert_instance_of TestThat::Tester::Selected, tester
-        assert_equal ["test_foo.py"], tester.tests_to_run
-      end
-    end
-
-    def test_default_directory_leaves_outside_paths_unchanged
-      in_python_monorepo do
-        config_path = write_config_file({ "default_directory" => "py" })
-        tester = TestThat::TestBuilder.build(
-          base_options(tests: ["other/test_bar.py"], config_file: config_path)
-        )
-
-        assert_instance_of TestThat::Tester::Selected, tester
-        assert_equal ["other/test_bar.py"], tester.tests_to_run
-      end
-    end
-
-    def test_default_directory_translates_changed_file_paths
-      in_python_monorepo do
-        File.write("py/test_foo.py", "")
+    def test_default_directory_from_config_file_is_honored
+      in_tmpdir do
+        FileUtils.mkdir_p("py")
+        File.write("py/pyproject.toml", "")
         config_path = write_config_file({ "default_directory" => "py" })
 
-        builder = TestThat::TestBuilder.new(base_options(config_file: config_path))
-        builder.define_singleton_method(:changed_files) { ["py/test_foo.py"] }
-        builder.define_singleton_method(:related_files) { [] }
-        tester = builder.build
+        tester = TestThat::TestBuilder.build(base_options(all: true, config_file: config_path))
 
-        assert_instance_of TestThat::Tester::VerboseSelected, tester
-        assert_equal ["test_foo.py"], tester.tests_to_run
-      end
-    end
-
-    def test_default_directory_falls_back_when_directory_missing
-      Dir.mktmpdir do |dir|
-        Dir.chdir(dir) do
-          config_path = write_config_file({ "default_directory" => "py" })
-          tester = TestThat::TestBuilder.build(base_options(all: true, config_file: config_path))
-
-          assert_instance_of TestThat::Tester::Error, tester
-        end
+        assert_instance_of TestThat::Tester::All, tester
+        assert_equal "uv run pytest", tester.test_harness.test_all_command
       end
     end
 
@@ -169,14 +137,10 @@ module TestThat
       { tests: [], config_file: nil }.merge(overrides)
     end
 
-    def in_ruby_project
-      Dir.mktmpdir do |dir|
-        original = Dir.pwd
-        Dir.chdir(dir)
+    def in_ruby_project(&block)
+      in_tmpdir do
         FileUtils.mkdir_p("test")
-        yield
-      ensure
-        Dir.chdir(original) if original
+        block.call
       end
     end
 
@@ -193,18 +157,6 @@ module TestThat
       builder.define_singleton_method(:related_tests) { [] }
       builder.define_singleton_method(:changed_tests) { [] }
       builder.build
-    end
-
-    def in_python_monorepo
-      Dir.mktmpdir do |dir|
-        original = Dir.pwd
-        Dir.chdir(dir)
-        FileUtils.mkdir_p("py")
-        File.write("py/pyproject.toml", "")
-        yield
-      ensure
-        Dir.chdir(original) if original
-      end
     end
   end
 end

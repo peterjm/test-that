@@ -13,7 +13,11 @@ module TestThat
     def initialize(options)
       @options = options
       @options = ConfigFile.new(options[:config_file]).options.merge(options)
-      apply_default_directory
+      @project_root = ProjectRoot.new(
+        harnesses: test_harnesses,
+        default_directory: @options[:default_directory],
+        ceiling: git_repo_root
+      )
     end
 
     def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
@@ -65,15 +69,15 @@ module TestThat
     end
 
     def related_files
-      @related_files ||= from_original_pwd { RelatedFiles.new(options[:tests] || []).files }
+      @related_files ||= @project_root.from_original_pwd { RelatedFiles.new(options[:tests] || []).files }
     end
 
     def changed_files
-      @changed_files ||= from_original_pwd { ChangedFiles.new(options[:include_branch_commits]).files }
+      @changed_files ||= @project_root.from_original_pwd { ChangedFiles.new(options[:include_branch_commits]).files }
     end
 
     def filter_tests(paths)
-      test_harness.select_tests(relative_to_default_directory(paths))
+      test_harness.select_tests(@project_root.relative_to_root(paths))
     end
 
     def test_harness
@@ -105,29 +109,9 @@ module TestThat
       options[:verbose]
     end
 
-    def apply_default_directory
-      @original_pwd = Dir.pwd
-      dir = options[:default_directory]
-      return unless dir && Dir.exist?(dir)
-
-      @target_abs = File.expand_path(dir)
-      Dir.chdir(@target_abs)
-    end
-
-    def relative_to_default_directory(paths)
-      return paths unless @target_abs
-
-      prefix = "#{@target_abs}/"
-      paths.map do |path|
-        abs = File.expand_path(path, @original_pwd)
-        abs.start_with?(prefix) ? abs.delete_prefix(prefix) : path
-      end
-    end
-
-    def from_original_pwd(&block)
-      return yield if Dir.pwd == @original_pwd
-
-      Dir.chdir(@original_pwd, &block)
+    def git_repo_root
+      output = `git rev-parse --show-toplevel 2>/dev/null`.strip
+      output.empty? ? nil : output
     end
   end
 end
