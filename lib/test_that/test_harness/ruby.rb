@@ -2,13 +2,9 @@
 
 module TestThat
   module TestHarness
-    class Ruby
+    class Ruby < Base
       REQUIRE_ALL_TESTS = '-e "Dir.glob(\"**/*_test.rb\", base: \"test\"){|f| require f}"'
       REQUIRE_EACH_TEST = '-e "ARGV.each{|f| require f}"'
-
-      def initialize(verbose: false)
-        @verbose = verbose
-      end
 
       def enabled?
         File.directory?("test")

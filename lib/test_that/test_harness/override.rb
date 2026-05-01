@@ -12,6 +12,10 @@ module TestThat
         @base.enabled?
       end
 
+      def supports_keyword?
+        @base.supports_keyword?
+      end
+
       def select_tests(files)
         @base.select_tests(files)
       end

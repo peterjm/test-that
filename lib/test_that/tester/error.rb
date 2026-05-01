@@ -3,8 +3,12 @@
 module TestThat
   module Tester
     class Error
+      def initialize(message)
+        @message = message
+      end
+
       def call
-        warn "Could not run tests; no compatible test environment detected"
+        warn @message
         false
       end
     end

@@ -6,9 +6,9 @@ module TestThat
   module Tester
     class ErrorTest < Minitest::Test
       def test_prints_error_message_and_returns_false
-        output = capture_io { refute TestThat::Tester::Error.new.call }.last
+        output = capture_io { refute TestThat::Tester::Error.new("boom").call }.last
 
-        assert_equal "Could not run tests; no compatible test environment detected\n", output
+        assert_equal "boom\n", output
       end
     end
   end

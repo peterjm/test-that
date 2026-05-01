@@ -86,6 +86,24 @@ module TestThat
       end
     end
 
+    def test_propagates_keyword_option_to_pytest_harness
+      in_tmpdir do
+        File.write("pyproject.toml", "")
+        tester = TestThat::TestBuilder.build(base_options(all: true, keyword: "foo"))
+
+        assert_instance_of TestThat::Tester::All, tester
+        assert_equal "uv run pytest -k foo", tester.test_harness.test_all_command
+      end
+    end
+
+    def test_returns_error_when_keyword_used_with_non_pytest_harness
+      in_ruby_project do
+        tester = TestThat::TestBuilder.build(base_options(all: true, keyword: "foo"))
+
+        assert_instance_of TestThat::Tester::Error, tester
+      end
+    end
+
     def test_propagates_verbose_option_to_harness
       in_ruby_project do
         tester = TestThat::TestBuilder.build(base_options(all: true, verbose: true))
