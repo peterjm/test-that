@@ -22,7 +22,7 @@ module TestThat
 
     def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       if no_test_harness?
-        Tester::Error.new
+        Tester::Error.new("Could not run tests; no compatible test environment detected")
       elsif test_all?
         Tester::All.new(test_harness, command_runner)
       elsif test_failed?
