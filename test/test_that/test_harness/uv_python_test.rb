@@ -63,6 +63,24 @@ module TestThat
 
         assert_equal "uv run pytest test_foo.py -v", cmd
       end
+
+      def test_test_files_command_includes_keyword_when_set
+        cmd = TestThat::TestHarness::UvPython.new(keyword: "foo and not bar").test_files_command(["test_x.py"])
+
+        assert_equal "uv run pytest test_x.py -k foo and not bar", cmd
+      end
+
+      def test_test_all_command_includes_keyword_when_set
+        cmd = TestThat::TestHarness::UvPython.new(keyword: "foo").test_all_command
+
+        assert_equal "uv run pytest -k foo", cmd
+      end
+
+      def test_test_failed_command_includes_keyword_when_set
+        cmd = TestThat::TestHarness::UvPython.new(keyword: "foo").test_failed_command
+
+        assert_equal "uv run pytest --lf -k foo", cmd
+      end
     end
   end
 end

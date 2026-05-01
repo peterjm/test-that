@@ -7,10 +7,15 @@ module TestThat
 
       def initialize(verbose: false, keyword: nil)
         super(verbose: verbose)
+        @keyword = keyword
       end
 
       def enabled?
         File.exist?("pyproject.toml")
+      end
+
+      def supports_keyword?
+        true
       end
 
       def select_tests(files)
@@ -36,6 +41,7 @@ module TestThat
       end
 
       def build_test_command(*args)
+        args.push("-k", @keyword) if @keyword
         args << "-v" if @verbose
         ["uv", "run", "pytest", *args].join(" ")
       end

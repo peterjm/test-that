@@ -23,6 +23,8 @@ module TestThat
     def build # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       if no_test_harness?
         Tester::Error.new("Could not run tests; no compatible test environment detected")
+      elsif keyword_unsupported?
+        Tester::Error.new("-k is only supported with pytest")
       elsif test_all?
         Tester::All.new(test_harness, command_runner)
       elsif test_failed?
@@ -42,6 +44,10 @@ module TestThat
 
     def no_test_harness?
       test_harness.nil?
+    end
+
+    def keyword_unsupported?
+      options[:keyword] && !test_harness.supports_keyword?
     end
 
     def test_all?
@@ -101,7 +107,7 @@ module TestThat
         TestHarness::Rails.new(verbose: verbose?),
         TestHarness::Ruby.new(verbose: verbose?),
         TestHarness::Rspec.new(verbose: verbose?),
-        TestHarness::UvPython.new(verbose: verbose?)
+        TestHarness::UvPython.new(verbose: verbose?, keyword: options[:keyword])
       ]
     end
 
