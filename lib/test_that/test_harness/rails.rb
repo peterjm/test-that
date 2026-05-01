@@ -2,11 +2,7 @@
 
 module TestThat
   module TestHarness
-    class Rails
-      def initialize(verbose: false)
-        @verbose = verbose
-      end
-
+    class Rails < Base
       def enabled?
         File.directory?("test") && File.exist?("config/application.rb")
       end

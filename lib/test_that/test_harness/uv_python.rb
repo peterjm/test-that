@@ -2,11 +2,11 @@
 
 module TestThat
   module TestHarness
-    class UvPython
+    class UvPython < Base
       TEST_REGEX = %r{(?:\A|/)([^/]+_test|test_[^/]+)\.py\z}
 
-      def initialize(verbose: false)
-        @verbose = verbose
+      def initialize(verbose: false, keyword: nil)
+        super(verbose: verbose)
       end
 
       def enabled?

@@ -2,11 +2,7 @@
 
 module TestThat
   module TestHarness
-    class Rspec
-      def initialize(verbose: false)
-        @verbose = verbose
-      end
-
+    class Rspec < Base
       def enabled?
         File.directory?("spec")
       end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "test_harness/base"
 require_relative "test_harness/ruby"
 require_relative "test_harness/rails"
 require_relative "test_harness/rspec"
